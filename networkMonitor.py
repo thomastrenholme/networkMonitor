@@ -35,7 +35,7 @@ class networkMonitor():
                 ps = nmap.PortScanner()
                 port_list = '21,22,23,80,81,8080'
         #Scans a range of hosts ip addresses between 192.168.0.1 and 192.168.0.10 (example ip, we can change this) for multiple devices
-                ps.scan('192.168.0.1-10', port_list)
+                ps.scan('192.168.0.1-10', port_list, arguments='-sS', sudo=True)
 
         # clear screen
                 sys.stdout.write(u"\u001b[2J\u001b[0;0H")
@@ -44,23 +44,25 @@ class networkMonitor():
                 mac = ""
                 print(ps.all_hosts())
                 for host in sorted(ps.all_hosts()):
-                        continue
-                        # blank if not Pi
-                        
-                        # if len(ps[host]['device']) > 0:
 
-                        #     # attempt to get mac address
-                        #     try:
-                        #         mac = ps[host]['addresses']['mac']
-                        #     except:
-                        #         mac = ""
+            # blank if not Pi
+                        print(ps[host]['addresses']['ipv4'])
+                        print(ps[host].hostname())
 
-                        #     device = tuple(ps[host]['device'].values())
-                        #     if str(device).find('Raspberry') > 0:
-                        #         device = "Pi!"
-                        #         # Sets color to white, results hostname, Ip, and Mac Addresses
-                        #         print(u"\u001b[37m" + "{} ({}) {}\u001b[0m".format(ps[host].hostname(), host, mac))
-                        #         return device, mac
-                        #     else:
-                        #         device = ""
-                        #         print(u"\u001b[0m" + "{} ({}) {}\u001b[0m".format(ps[host].hostname(), host, mac))
+            # if len(ps[host]['product']) > 0:
+
+            #     # attempt to get mac address
+            #     try:
+            #         mac = ps[host]['addresses']['mac']
+            #     except:
+            #         mac = ""
+
+            #     device = tuple(ps[host]['device'].values())
+            #     if str(device).find('Raspberry') > 0:
+            #         device = "Pi!"
+            #         # Sets color to white, results hostname, Ip, and Mac Addresses
+            #         print(u"\u001b[37m" + "{} ({}) {}\u001b[0m".format(ps[host].hostname(), host, mac))
+            #         return device, mac
+            #     else:
+            #         device = ""
+            #         print(u"\u001b[0m" + "{} ({}) {}\u001b[0m".format(ps[host].hostname(), host, mac))
