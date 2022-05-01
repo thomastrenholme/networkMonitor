@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 import sys
-from Main import networkMonitor
+from networkMonitor import networkMonitor
 
 date = dt.now().strftime("%m-%d-"+"20"+"%y")
 pathname = "Network_Monitor_Logs/"

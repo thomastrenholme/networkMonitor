@@ -18,7 +18,6 @@ class emailScheduler:
         self.emailList = []
         self.gmailAccPassword = "cs578iscool!"
 
-        self.setUpNetworkEmailer()
 
     def __init__(self, frequencyInDays, emailList):
         self.frequency = frequencyInDays
@@ -26,21 +25,38 @@ class emailScheduler:
         self.emailList = emailList
         self.gmailAccPassword = "cs578iscool!"
 
-    def addEmailToSubscriberList(self, email):
-        self.emailList.append(email)
+    def addEmailToSubscriberList(self, emails):
 
-    def removeFromSubscriberList(self, email):
-        self.emailList.remove(email)
+        for email in emails:
+            if email not in self.emailList:
+                    self.emailList.append(email)
+
+
+    def removeEmailFromSubscriberList(self, emails):
+
+        for email in emails:
+            if email in self.emailList:
+                    self.emailList.remove(email)
+        
+    ##called once gui setup has completed
+
+
     def setUpNetworkEmailer(self):
 
         sleepFrq=self.frequency
 
+
+        counter = 0
+        ##counter will count minutes. Once counter reaches email interval, send email and reset counter.
+        ##sleep for one minute, then recheck to see if frequency has been updated.
+
         while True:
-            time.sleep(sleepFrq*60*60*24)
-
-            self.emailSenderFunction(self.emailList)
-        
-
+            while counter < sleepFrq*24*60: ##sleep Frq in minutes. conversion:  sleepFrq(days) * 24 hour/day * 60 min/hour
+                time.sleep(60)
+                self.emailSenderFunction(self.emailList)
+            
+            ##Finished cycle. Reset counter to 0.
+            counter = 0
 
 
 
