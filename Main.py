@@ -7,7 +7,7 @@ from datetime import datetime
 from emailScheduler import emailScheduler 
 ps = nmap.PortScanner()
 #Scans a range of hosts ip addresses between 192.168.0.1 and 192.168.0.10 (example ip, we can change this) for multiple devices
-ps.scan(hosts = '192.168.0.1-10')
+ps.scan(hosts = '192.168.0.1-10, 22')
 
 # clear screen
 sys.stdout.write(u"\u001b[2J\u001b[0;0H")
