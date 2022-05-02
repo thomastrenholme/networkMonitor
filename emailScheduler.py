@@ -1,11 +1,16 @@
 #Thomas Trenholme
 
 import email
+import os
 import sys
 import nmap
 import smtplib
 import time
 from datetime import datetime
+from datetime import timedelta
+from email.mime.multipart import MIMEMultipart 
+from email.mime.text import MIMEText
+import randfacts
 
 
 class emailScheduler:
@@ -75,51 +80,51 @@ class emailScheduler:
 
     ##sends email and waits (frq days) and will send another one
     def emailSenderFunction(self, emailList):
-        ##Implement every [frequency] days, do this
+
+        ##Get email body
+        report_text = ""
+        yesterdayString = (datetime.now() + timedelta(days=-1)).strftime("%m-%d-"+"20"+"%y") + "-Network_Monitor_Log.txt" ##Gets 05-01-2022-Network_Monitor_Log.txt format
+        print(yesterdayString)
+        with open(os.path.join(os.path.dirname(__file__), 'Network_Monitor_Logs/' + yesterdayString), 'r') as f:
+            for line in f:
+                report_text+=line+"\n"
+        report_text + "\nFun Fact of the Day: " + randfacts.get_fact()
+
+            
         try:
+            
+
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.ehlo()
-            server.login(self.gmailAcc, self.gmailAccPassword)
+
+            server.starttls()
+
+            server.ehlo()
+
+            server.login("networkmonitorpi@gmail.com", "cs578iscool!")
 
             for addr in emailList:
                 ##send email to email
-                    sent_from = "Raspberry Pi Network Monitor"
-                    to = addr
-                    ##Implement subject
-                    subject = "Pi Network Scanner Report for: " + datetime.now().strftime("%m/%d/"+"20"+"%y")
-                    body = "Network visits: " + "Network statistics: " + " Unusual activity: " + " Fun fact of the day: "
+                    email_text = self.getNetworkReportsForEmail(addr, report_text)
 
-                    email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                    server.sendmail(self.gmailAcc, addr, email_text)
+                    server.sendmail("networkmonitorpi@gmail.com", addr, email_text)
             
             ##Close connection after all emails sent
             server.close()
+            print("Successfully sent out emails.")
         except:
             print("Server smtp setup returned error")
     
 
-    ##Return list of email text for setUpNetworkEmailer
-    def getNetworkReportsForEmail(self, sendToEmail):
-        sent_from = "Raspberry Pi Network Monitor"
-        to = sendToEmail
+    ##Return email text for sending
+    def getNetworkReportsForEmail(self, sendToEmail, bodyText):
+        msg = MIMEMultipart()
+        msg['From']="networkmonitorpi@gmail.com"
+        msg['To']=sendToEmail
+        msg['Subject'] = "Pi Network Scanner Report for: " + datetime.now().strftime("%m/%d/"+"20"+"%y")
         ##Implement subject
-        subject = "Pi Network Scanner Report for: " + datetime.now().strftime("%m/%d/"+"20"+"%y")
-        body = "Network visits: " + "Network statistics: " + " Unusual activity: " + " Fun fact of the day: "
-
-        email_text = """\
-        From: %s
-        To: %s
-        Subject: %s
-
-        %s
-        """ % (sent_from, ", ".join(to), subject, body)
-
-        return email_text
+        msg.attach(MIMEText(bodyText))
+        body = bodyText
+        
+        return msg.as_string()
         
