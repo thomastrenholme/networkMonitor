@@ -1,4 +1,6 @@
 Report for: 05-01-2022
+Download Speed: 257.69013112362717 Mb/s
+Upload Speed: 26.71736599699608 Mb/s
 IP: 192.168.0.1
 Port #21- Name: ftp; State: closed; Reason: reset
 Port #22- Name: ssh; State: filtered; Reason: no-response

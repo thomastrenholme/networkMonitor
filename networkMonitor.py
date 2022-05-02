@@ -6,6 +6,7 @@ import nmap
 import smtplib
 import time
 import datetime
+import speedtest
 from emailScheduler import emailScheduler
 from network_logger import network_logger
 from networkMonitorGUI import networkMonitorGUI
@@ -20,9 +21,10 @@ class networkMonitor():
                 self.ps = nmap.PortScanner()
                 self.nLogger = network_logger()
                 self.initializeNetwork()
-                
+                self.yesterdays_ips=[]
+                self.malicious = []
 
-                ##Initialize GUI Thread
+                #Initialize GUI Thread
                 self.exitThreads=False
                 self.emailScheduler = emailScheduler(1, [])
                 guiThread = Thread(target=networkMonitorGUI.networkMonitorsetup, args=(self, ))
@@ -40,16 +42,22 @@ class networkMonitor():
                 
         
         def initializeNetwork(self):
+                speed = speedtest.Speedtest()
+                download = speed.download()/1024/1024
+                upload = speed.upload()/1024/1024
+
+                print("Download Speed: "+str(download)+" Mb/s")
+                print("Upload Speed: "+str(upload)+" Mb/s")
+                self.nLogger.add_text("Download Speed: "+str(download)+" Mb/s\n")
+                self.nLogger.add_text("Upload Speed: "+str(upload)+" Mb/s\n")
                 # Ping scan to network to get list of ip addresses connected to network
                         # port_list = '21,22,23,80,81,8080'
                 self.ps.scan(hosts='192.168.0.1/24', arguments='-sS -v -n -PE -PA21,23,80,3389', sudo=True) 
                 # generate lists of Malicious IPs and Yesterdays IPs based on associated text files and logs
                 self.generateMaliciousIPList()
                 self.generateYesterdaysIPList()
-        
-                
-                
 
+                
                 # clear screen
                 sys.stdout.write(u"\u001b[2J\u001b[0;0H")
                 sys.stdout.flush()
@@ -102,3 +110,5 @@ class networkMonitor():
                                 if line[0:3] == "IP:":
                                         self.yesterdays_ips.append(line[0:len(line)-1])
 
+
+nm = networkMonitor()

@@ -88,7 +88,7 @@ class emailScheduler:
         with open(os.path.join(os.path.dirname(__file__), 'Network_Monitor_Logs/' + yesterdayString), 'r') as f:
             for line in f:
                 report_text+=line+"\n"
-        report_text + "\nFun Fact of the Day: " + randfacts.get_fact()
+        report_text += "\nFun Fact of the Day: " + randfacts.get_fact()
 
             
         try:
