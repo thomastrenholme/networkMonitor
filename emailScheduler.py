@@ -63,7 +63,7 @@ class emailScheduler:
 
                 time.sleep(60)##sleep for a minute
 
-                print("Waited: " + str(counter) + " minute." + " Waiting till: " + str(sleepFrq) " Days have passed to send out email.")
+                print("Waited: " + str(counter) + " minute." + " Waiting till: " + str(sleepFrq) + " Days have passed to send out email.")
                 print("Email list: " + str(networkMonitor.emailScheduler.emailList))
                 counter+=1 ##increment counter by one minute
             
