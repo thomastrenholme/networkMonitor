@@ -1,12 +1,20 @@
 from datetime import datetime as dt
 import sys
-from networkMonitor import networkMonitor
+#from networkMonitor import networkMonitor
 
-date = dt.now().strftime("%m-%d-"+"20"+"%y")
-pathname = "Network_Monitor_Logs/"
-filename = date + "-Network_Monitor_Log"
-print(filename)
 
-with open(pathname+filename+".txt", 'w') as output:
-    nm = networkMonitor()
-    nm.initializeNetwork()
+class network_logger():
+    def __init__(self):
+        self.date = dt.now().strftime("%m-%d-"+"20"+"%y")
+        self.pathname = "Network_Monitor_Logs/"
+        self.filename = self.date + "-Network_Monitor_Log"
+        self.data = "Report for: "+str(self.date)+"\n"
+#print(filename)
+
+    def write_to_file(self):
+        with open(self.pathname+self.filename+".txt", 'w') as output:
+            output.write(self.data)
+
+
+    def add_text(self, text_to_add):
+        self.data+=text_to_add

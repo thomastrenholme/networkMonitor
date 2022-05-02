@@ -1,0 +1,26 @@
+Report for: 05-01-2022
+IP: 192.168.0.1
+Port #21- Name: ftp; State: closed; Reason: reset
+Port #22- Name: ssh; State: filtered; Reason: no-response
+Port #23- Name: telnet; State: filtered; Reason: no-response
+Port #80- Name: http; State: open; Reason: syn-ack
+Port #81- Name: hosts2-ns; State: closed; Reason: reset
+Port #8080- Name: http-proxy; State: open; Reason: syn-ack
+IP: 192.168.0.10
+IP: 192.168.0.11
+IP: 192.168.0.12
+Port #21- Name: ftp; State: closed; Reason: reset
+Port #22- Name: ssh; State: closed; Reason: reset
+Port #23- Name: telnet; State: closed; Reason: reset
+Port #80- Name: http; State: closed; Reason: reset
+Port #81- Name: hosts2-ns; State: closed; Reason: reset
+Port #8080- Name: http-proxy; State: closed; Reason: reset
+IP: 192.168.0.13
+IP: 192.168.0.2
+IP: 192.168.0.3
+IP: 192.168.0.4
+IP: 192.168.0.5
+IP: 192.168.0.6
+IP: 192.168.0.7
+IP: 192.168.0.8
+IP: 192.168.0.9
