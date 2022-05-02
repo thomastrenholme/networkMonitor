@@ -5,7 +5,7 @@ from threading import Thread
 import nmap
 import smtplib
 import time
-from datetime import datetime
+import datetime
 from emailScheduler import emailScheduler
 from network_logger import network_logger
 from networkMonitorGUI import networkMonitorGUI
@@ -35,47 +35,70 @@ class networkMonitor():
                 
 
 
-        # deviceID, macAddr = initializeNetwork()
+      
 
                 
         
         def initializeNetwork(self):
-
-                port_list = '21,22,23,80,81,8080'
-                self.ps.scan('192.168.0.1-13', port_list, arguments='-sS -v', sudo=True)
+                # Ping scan to network to get list of ip addresses connected to network
+                        # port_list = '21,22,23,80,81,8080'
+                self.ps.scan(hosts='192.168.0.1/24', arguments='-sS -v -n -PE -PA21,23,80,3389', sudo=True) 
+                # generate lists of Malicious IPs and Yesterdays IPs based on associated text files and logs
                 self.generateMaliciousIPList()
+                self.generateYesterdaysIPList()
+        
                 
-        #Scans a range of hosts ip addresses between 192.168.0.1 and 192.168.0.10 (example ip, we can change this) for multiple devices
-                self.ps.scan('192.168.0.1-10', port_list, arguments='-sS', sudo=True)
+                
 
-        # clear screen
+                # clear screen
                 sys.stdout.write(u"\u001b[2J\u001b[0;0H")
                 sys.stdout.flush()
                 time.sleep(0.2)
-                mac = ""
-                print(self.ps.all_hosts())
+                
+                # after completing scan, iterate through all hosts, or IPs and access data
+                        # print(self.ps.all_hosts())
                 for host in sorted(self.ps.all_hosts()):
 
-            # blank if not Pi
-                        print(self.ps[host])
-                        ip_string = "IP: "+str(self.ps[host]['addresses']['ipv4'])
-                        # print(ip_string)
+                        # get IP address, and add it to string for logging
+                                # print(self.ps[host])
+                        ip = str(self.ps[host]['addresses']['ipv4'])
+                        ip_string = "IP: "+ip
+                                # print(ip_string)
+                        
                         self.nLogger.add_text(ip_string+"\n")
-                        if ip_string in self.malicious:
+                        # check to see if the ip address is in the list of malicious ips 
+                        if ip in self.malicious:
+                                # if so, send notification to logger
                                 self.nLogger.add_text("POTENTIALLY MALICIOUS IP ADDRESS DETECTED")
-                                print("POTENTIALLY MALICIOUS IP ADDRESS DETECTED")
+                                # print("POTENTIALLY MALICIOUS IP ADDRESS DETECTED")
+                        # check if this ip was on yesterday's log, if not log it as a new connection
+                        if ip_string not in self.yesterdays_ips:
+                                self.nLogger.add_text("NETWORK HAS RECEIVED A NEW CONNECTION\n")
+                        # if the scan picks up tcp data for this ip
                         if 'tcp' in self.ps[host].keys():
+                                # get list of tcp ports associated
                                 tcplist = self.ps[host]['tcp']
+                                # for each tcp port
                                 for tcp in tcplist:
+                                        # add the port number, name, state, and reason to the logger
                                         output = "Port #"+str(tcp)+"- Name: "+str(tcplist[tcp]['name'])+"; State: "+str(tcplist[tcp]["state"])+"; Reason: "+tcplist[tcp]["reason"]+"\n"
                                         # print(output) 
                                         self.nLogger.add_text(output)
+                # write everything stored in logger to file
                 self.nLogger.write_to_file()   
-            # if len(ps[host]['product']) 
-
+           
+        # open text file of malicious ip addresses, and store each ip into a list
         def generateMaliciousIPList(self):
                 with open("malicious-ips.txt",'r+') as ipFile:
                         self.malicious = []
                         for line in ipFile:
-
                                 self.malicious.append(line)
+
+        # open yesterday's log, and store each ip into a list to see what connections are new
+        def generateYesterdaysIPList(self):
+                yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%m-%d-"+"20"+"%y")
+                with open("Network_Monitor_Logs/"+yesterday+"-Network_Monitor_Log.txt", "r") as yesterday:
+                        for line in yesterday:
+                                if line[0:3] == "IP:":
+                                        self.yesterdays_ips.append(line[0:len(line)-1])
+

@@ -14,5 +14,5 @@ class network_logger:
             output.write(self.data)
 
 
-    def add_text(self, text_to_add):
+    def add_text(self, text_to_add):  
         self.data+=text_to_add 
