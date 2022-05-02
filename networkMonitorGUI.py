@@ -10,7 +10,7 @@ class networkMonitorGUI:
     frequency = ""
     frequencies = ["Every hour", "Every two hours", "Every 6 hours", "Every 12 Hours", "Every 24 hours (1 Day)", "Every 48 hours (2 days)", "Every 168 Hours (1 Week)"]
     frequenciesInDaysArr = [float(1)/24, float(1)/12, float(1)/4, float(1)/2, 1, 2, 7]
-    possibleActions = ["Update frequency of emails.", "Add email to emailList", "Remove email from emailList", "Turn on or off firewall", "Turn network monitor off"]
+    possibleActions = ["Update frequency of emails.", "Add email to emailList", "Remove email from emailList", "Send network report to email list right now", "Turn network monitor off"]
 
     def networkMonitorsetup(networkMonitorpi):
         easygui.msgbox(msg="Welcome to the networkMonitorPi, developed by CS578 group 3", title="networkMonitorPi v1.1")
@@ -67,9 +67,17 @@ class networkMonitorGUI:
 
             networkMonitorpi.emailScheduler.removeEmailFromSubscriberList(listOfEmailsToRemove)
 
-        if choice == "Turn on or off firewall":
+        if choice == "Send network report to email list right now": 
 
-            print("Firewall is currently: " + "off")
+            bigStrEmailList = ""
+            for email in networkMonitorpi.emailScheduler.emailList:
+                bigStrEmailList+= email + "\n"
+            choice = easygui.buttonbox(msg="Are you sure? Emails will be sent to the following email addresses:"+bigStrEmailList,title="networkMonitorPi v1.1",choices=["Yes", "No"])
+            if choice == "Yes":
+                networkMonitorpi.emailScheduler.emailSenderFunction(networkMonitorpi.emailScheduler.emailList)
+                print("Sent out emails to: ")
+                for email in networkMonitorpi.emailScheduler.emailList:
+                    print(email)
 
         if choice == "Turn network monitor off":
             networkMonitorpi.exitThreads=True
