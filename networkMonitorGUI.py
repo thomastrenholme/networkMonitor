@@ -27,8 +27,6 @@ class networkMonitorGUI:
         networkMonitorpi.emailScheduler.addEmailToSubscriberList(listOfEmailsToAdd)
 
 
-        print("Setting setup to True")
-        networkMonitorpi.setup = True
         networkMonitorGUI.networkMonitorMainMenu(networkMonitorpi)
 
 
