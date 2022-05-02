@@ -1,6 +1,7 @@
 ## Remember to import nmap modualtion for this to work
 import email
 import sys
+from threading import Thread
 import nmap
 import smtplib
 import time
@@ -14,15 +15,15 @@ from networkMonitorGUI import networkMonitorGUI
 class networkMonitor():
 
         def __init__(self):
-                self.emailList = []
-                self.frequencyInDays=0
-                self.frequencyStr=""
-                self.emailScheduler = emailScheduler(self.frequencyInDays, self.emailList)
-                networkMonitorGUI.networkMonitorsetup(self)
-
+                self.setup = False
+                self.exitThreads=False
+                self.emailScheduler = emailScheduler(1, [])
+                guiThread = Thread(target=networkMonitorGUI.networkMonitorsetup, args=(self, ))
+                guiThread.start()
                 
                 ##Setup is done, start email timer and monitoring
-                self.emailScheduler.setUpNetworkEmailer()
+                emailSendingThread = Thread(target=emailScheduler.setUpNetworkEmailer, args=(self, ))
+                emailSendingThread.start()
 
                 
 

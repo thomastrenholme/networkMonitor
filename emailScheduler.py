@@ -41,21 +41,34 @@ class emailScheduler:
     ##called once gui setup has completed
 
 
-    def setUpNetworkEmailer(self):
+    ##Threaded function called from networkMonitor
+    def setUpNetworkEmailer(networkMonitor):
 
-        sleepFrq=self.frequency
+        sleepFrq = networkMonitor.emailScheduler.frequency
 
 
         counter = 0
         ##counter will count minutes. Once counter reaches email interval, send email and reset counter.
         ##sleep for one minute, then recheck to see if frequency has been updated.
 
+        print("Entering threaded func")
+
         while True:
             while counter < sleepFrq*24*60: ##sleep Frq in minutes. conversion:  sleepFrq(days) * 24 hour/day * 60 min/hour
-                time.sleep(60)
-                self.emailSenderFunction(self.emailList)
+                
+                ##If exit flag
+                if networkMonitor.exitThreads:
+                    exit(0)
+                sleepFrq=networkMonitor.emailScheduler.frequency
+
+                time.sleep(60)##sleep for a minute
+
+                print("Waited: " + str(counter) + " minute." + " Waiting till: " + str(sleepFrq) " Days have passed to send out email.")
+                print("Email list: " + str(networkMonitor.emailScheduler.emailList))
+                counter+=1 ##increment counter by one minute
             
-            ##Finished cycle. Reset counter to 0.
+            ##Finished cycle. Send out email(s) and Reset counter to 0.
+            networkMonitor.emailScheduler.emailSenderFunction(networkMonitor.emailScheduler, networkMonitor.emailScheduler.emailList)
             counter = 0
 
 
@@ -66,7 +79,7 @@ class emailScheduler:
         try:
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.ehlo()
-            server.login(gmail_user, gmail_password)
+            server.login(self.gmailAcc, self.gmailAccPassword)
 
             for addr in emailList:
                 ##send email to email
@@ -84,7 +97,7 @@ class emailScheduler:
                     %s
                     """ % (sent_from, ", ".join(to), subject, body)
 
-                    server.sendmail(self.gmailAcc, emailList[i], email_text)
+                    server.sendmail(self.gmailAcc, addr, email_text)
             
             ##Close connection after all emails sent
             server.close()

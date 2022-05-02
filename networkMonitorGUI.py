@@ -17,16 +17,18 @@ class networkMonitorGUI:
 
         frequency = easygui.buttonbox(msg="Please enter how frequently you would like to receive email updates from the network monitor",title="networkMonitorPi v1.1",choices=networkMonitorGUI.frequencies)
 
-        networkMonitorpi.frequencyInDays=networkMonitorGUI.frequenciesInDaysArr[networkMonitorGUI.frequencies.index(frequency)]
-        networkMonitorpi.frequencyStr=frequency
+        networkMonitorpi.emailScheduler.frequency=networkMonitorGUI.frequenciesInDaysArr[networkMonitorGUI.frequencies.index(frequency)]
+        networkMonitorpi.emailScheduler.frequencyStr=frequency
 
         emails = str(easygui.enterbox(msg="Please enter the email address or email addresses (seperated by a space) you would like the network monitor to send updates to. ",title="networkMonitorPi v1.1"))
 
         listOfEmailsToAdd = emails.split()
 
-        for email in listOfEmailsToAdd:
-                networkMonitorpi.emailList.append(email)
+        networkMonitorpi.emailScheduler.addEmailToSubscriberList(listOfEmailsToAdd)
 
+
+        print("Setting setup to True")
+        networkMonitorpi.setup = True
         networkMonitorGUI.networkMonitorMainMenu(networkMonitorpi)
 
 
@@ -35,10 +37,10 @@ class networkMonitorGUI:
 
         if choice == "Update frequency of emails.":
 
-            frequency = easygui.buttonbox(msg="Current frequency: " + networkMonitorpi.frequencyStr + "\nPlease enter how frequently you would like to receive email updates from the network monitor",title="networkMonitorPi v1.1",choices=networkMonitorGUI.frequencies)
+            frequency = easygui.buttonbox(msg="Current frequency: " + networkMonitorpi.emailScheduler.frequencyStr + "\nPlease enter how frequently you would like to receive email updates from the network monitor",title="networkMonitorPi v1.1",choices=networkMonitorGUI.frequencies)
 
-            networkMonitorpi.frequencyInDays=networkMonitorGUI.frequenciesInDaysArr[networkMonitorGUI.frequencies.index(frequency)]
-            networkMonitorpi.frequencyStr=frequency
+            networkMonitorpi.emailScheduler.frequency=networkMonitorGUI.frequenciesInDaysArr[networkMonitorGUI.frequencies.index(frequency)]
+            networkMonitorpi.emailScheduler.frequencyStr=frequency
 
         if choice == "Add email to emailList":
 
@@ -72,6 +74,7 @@ class networkMonitorGUI:
             print("Firewall is currently: " + "off")
 
         if choice == "Turn network monitor off":
+            networkMonitorpi.exitThreads=True
             exit(0)
         
         ##Reopen main menu
